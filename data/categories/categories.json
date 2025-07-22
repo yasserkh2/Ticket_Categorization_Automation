@@ -1,0 +1,40 @@
+[  
+  {  
+    "value": "Issue Type",  
+    "description": "The primary category of the support ticket",  
+    "subcategories": [  
+      {"value": "Bug", "description": "Software defects and errors"},  
+      {"value": "Feature Request", "description": "New functionality or enhancements"},  
+      {"value": "Documentation", "description": "Missing or incorrect documentation"},  
+      {"value": "Other"}  
+    ]  
+  },  
+  {  
+    "value": "Priority",  
+    "description": "The urgency and importance level of the issue",  
+    "subcategories": [  
+      {"value": "Critical", "description": "System-breaking issues requiring immediate attention"},  
+      {  
+        "value": "High",  
+        "description": "Important issues affecting user experience or business goals",  
+        "subcategories": [  
+          {"value": "Performance"},  
+          {"value": "User Experience"},  
+          {"value": "Business Impact"}  
+        ]  
+      },  
+      {"value": "Medium", "description": "Standard issues with moderate impact"},  
+      {"value": "Low", "description": "Minor issues or nice-to-have improvements"}  
+    ]  
+  },  
+  {  
+    "value": "Component",  
+    "description": "The part of the system affected by the issue",  
+    "subcategories": [  
+        {"value": "Frontend"},  
+        {"value": "Backend"},  
+        {"value": "API"},  
+        {"value": "Mobile"}  
+    ]  
+  }  
+]

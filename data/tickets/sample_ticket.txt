@@ -1,0 +1,22 @@
+Dashboard loading extremely slow on mobile devices
+   
+Issue #1247
+   
+Description:
+The main dashboard takes 15+ seconds to load on mobile devices, especially on slower connections. This is causing user frustration and increased bounce rates.
+
+Steps to reproduce:
+   1. Open the app on a mobile device
+   2. Navigate to the dashboard
+   3. Observe loading time
+
+Expected behavior: Dashboard should load within 3-5 seconds
+Actual behavior: Takes 15+ seconds, sometimes times out
+
+Additional context:
+   - Affects iOS Safari and Chrome on Android
+   - Desktop version works fine
+   - API documentation for the dashboard endpoints is missing, making it hard for new developers to understand the data flow
+   - This is blocking our mobile user acquisition goals
+
+Priority: High - affecting user experience and business metrics
