@@ -189,11 +189,3 @@ Run the tests using pytest:
 ```
 pytest tests/
 ```
-
-## License
-
-[Specify your license here]
-
-## Contributing
-
-[Add contribution guidelines if applicable]
