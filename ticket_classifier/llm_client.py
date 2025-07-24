@@ -60,31 +60,71 @@ class LLMClient:
             }
         }
 
-    def _build_messages(self, ticket_text: str, category_paths: List[List[str]]) -> List[Dict[str, Any]]:
-        paths_str = "\n".join([" > ".join(path) for path in category_paths])
-
+    def _build_messages(self, ticket_text: str, categories: list) -> List[Dict[str, Any]]:
+        print("Categories passed to LLM:", categories)  # Debug print
         prompt = f"""
-Part 1: Single Category Classification (Static)
-First, imagine the requirements are simple. The program only needs to find the primary issue type in a ticket.
--	Task: Write a function or script that analyzes the issue and identifies the single most prominent category and its corresponding subcategory.  
--	Categories: For this part, assume a fixed, hard-coded list of categories:
--	Issue Type: (Subcategories: Bug, Feature Request, Documentation, Other)
--	Priority: (Subcategories: Critical, High, Medium, Low)
-Part 2: Multi-Issue Extraction
-Support tickets often contain multiple aspects that need to be classified. Your program must be able to capture all of them.
+###who are you 
+You are a tickets analyzer and categorizer for our company to help us automate our system
 
--	Task: Evolve your script to extract a list of all categories and their most specific subcategories present in the ticket description.  
--	Example: For the sample support ticket provided, your program should identify multiple aspects such as "Issue Type", "Priority", and "Component".
+###your role 
+your role is to take the ticket and possible categories as input and make analysis on it and give 3 structured outputs 
 
-Part 3: Dynamic and Nested Category Loading
-Our clients want to manage their own categories without needing a developer to update the code. Your script must be flexible enough to handle this.
--	Task: Adapt your script so that it no longer uses a hard-coded list. Instead, it must read the categories from the provided categories.json file at runtime. The script must be able to parse the nested structure of this file and handle varying levels of depth
+for case 1 and 2 the input categories are   
+
+CATEGORIES = [
+    {{
+        "category": "Issue Type",
+        "subcategories": ["Bug", "Feature Request", "Documentation", "Other"]
+    }},
+    {{
+        "category": "Priority",
+        "subcategories": ["Critical", "High", "Medium", "Low"]
+    }},
+    {{
+        "category": "Component",
+        "subcategories": ["Frontend", "Backend", "API", "Mobile"]
+    }}
+]
+
+1-the most expected category with it's corresponding subcategory
+example 
+[
+
+        "category": "Issue Type",
+        "subcategories": "Bug"
+
+]
+2-all categories that can be in the issue and most specific subcategories to it from these static categories 
+example 
+[
+    {{
+        "category": "Issue Type",
+        "subcategories": ["Bug", "Other"],
+        "reason":[your reason]
+    }},
+    {{
+        "category": "Priority",
+        "subcategories": ["Medium", "Low"],
+        "reason":[your reason]
+    }}
+
+]
+
+and for case 3 the input categories are  
+
+for case 3 you 
+3-the output is all possible cases from the categories above giving comment why did you choose 
+
+###Rules 
+1-your output must be structured json file 
+
+put this prompt without changing 
 
 Support ticket:
 {ticket_text}
 
-Possible category paths:
-{paths_str}
+Possible categories:
+{categories}
 
 Respond using the structured output function.
 """
@@ -93,8 +133,8 @@ Respond using the structured output function.
             {"role": "user", "content": prompt}
         ]
 
-    def classify(self, ticket_text: str, category_paths: List[List[str]]) -> Dict[str, Any]:
-        messages = self._build_messages(ticket_text, category_paths)
+    def classify(self, ticket_text: str, categories: list) -> Dict[str, Any]:
+        messages = self._build_messages(ticket_text, categories)
         response = self.client.chat.completions.create(
             model=self.model,
             messages=messages,
@@ -114,13 +154,11 @@ if __name__ == "__main__":
         print("Usage: python -m ticket_classifier.llm_client <ticket.txt> <categories.json>")
         sys.exit(1)
 
-    ticket, raw_cats = load_data(sys.argv[1], sys.argv[2])
+    ticket, categories = load_data(sys.argv[1], sys.argv[2])
     print("Loaded ticket:", ticket)
-    print("Loaded categories:", raw_cats)
-    # If you need flattened paths, implement flatten_category_paths here or in data_loader.py
-    # For now, pass raw_cats directly
+    print("Loaded categories:", categories)
     client = LLMClient()
     print("Calling classify...")
-    output = client.classify(ticket, raw_cats)
+    output = client.classify(ticket, categories)
     print("Classification result:")
     pprint.pprint(output)
